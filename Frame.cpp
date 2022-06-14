@@ -1,6 +1,8 @@
 #include "header.h"
 #include <iostream>
 #include <sstream>
+#include <math.h>
+
 
 
 FrameSequence::FrameSequence(){
@@ -90,21 +92,33 @@ void FrameSequence::readImage(const std::string & file){
 }
 void FrameSequence::ExtractImage(int x1,int y1 ,int x2,int y2, int w, int h){
     FrameSequence::height = h;
+    FrameSequence::width = w;
     float m = (y2 - y1)/float(x2 - x1);
-    unsigned char** img = new unsigned char*[h];
-    // y = mx + c
-    // c = y - mx
+
+    //m = std::abs(m);
+
+    int c1 = y1 - m*x1;
+    int c2 = y2 - m*x2;
+
+    std::cout<<c1<<" and "<<c2<<std::endl;
     
-    for(int x = x1; x<w;x++){
+ 
+
+    // given (x,y) etraxt the frame and put it the frame sequence vector;
+    unsigned char** img = new unsigned char*[h];
+    
+    for(int x = 0; x<h;x++){
         img[x] = new unsigned char[w];
-        for(int y = y1;y<h;y++)
-            img[x][y] = FrameSequence::Picture[x][y];
+        for(int y = 0;y<w;y++)
+            img[x][y] = FrameSequence::Picture[x1+x][y1+y];
     }
     
     FrameSequence::imageSequence.push_back(img);
 
     std::cout<<"slope "<<m<<" size is "<<FrameSequence::imageSequence.size()<<std::endl;
+
     
+    std::ofstream file;
 
 }
 
@@ -123,14 +137,19 @@ FrameSequence::~FrameSequence(){
 
     int size = FrameSequence::imageSequence.size();
 
-    for(int i = 0 ;i< size;++i){
-        for(int j = 0;j<FrameSequence::height;j++){
-            delete [] FrameSequence::imageSequence[i][j];
+    std::cout<<"The size is "<<size<<std::endl;
+
+    for(int i = 0 ;i<size;++i){
+        for(int k = 0;k<FrameSequence::height;k++){
+            delete [] FrameSequence::imageSequence[i][k];
         }
-        delete FrameSequence::imageSequence[i];
-       
+        delete [] FrameSequence::imageSequence[i];
+
     }
+    FrameSequence::imageSequence.clear();
     std::cout<<"Frames destroyed "<<std::endl;
+
+
 
   
 }
