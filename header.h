@@ -13,6 +13,7 @@
             FrameSequence(void);
             ~FrameSequence(void);
             void readImage(std::string filename);
+            void ExtractImage();
             
             
     };
