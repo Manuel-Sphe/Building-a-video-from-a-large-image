@@ -2,6 +2,7 @@
 #define IMG
 
     #include <vector>
+    #include <string>
     class FrameSequence{
         private:
             // This an array of fram 
@@ -9,8 +10,10 @@
             int row, col;
 
         public:
-            FrameSequence();
-            ~FrameSequence();
+            FrameSequence(void);
+            ~FrameSequence(void);
+            void readImage(std::string filename);
+            
             
     };
 #endif 
