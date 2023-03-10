@@ -7,13 +7,14 @@
         private:
             // This an array of fram 
             std::vector<unsigned char**> imageSequence;
-            int row, col;
+            unsiged char** myFrame;
+            int row, col, width, height;
 
         public:
             FrameSequence(void);
             ~FrameSequence(void);
             void readImage(std::string filename);
-            void ExtractImage();
+            void ExtractImage(int,int,int,int,int,int);
             
             
     };
