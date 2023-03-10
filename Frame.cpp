@@ -4,7 +4,7 @@
 #include <math.h>
 
 
-
+FrameSequence frameSeq;
 FrameSequence::FrameSequence(){
     FrameSequence::row = 0;
     FrameSequence::col = 0; 
@@ -93,29 +93,7 @@ void FrameSequence::readImage(const std::string & file){
 void FrameSequence::ExtractImage(int x1,int y1 ,int x2,int y2, int w, int h){
     FrameSequence::height = h;
     FrameSequence::width = w;
-    float m = (y2 - y1)/float(x2 - x1);
-
-    //m = std::abs(m);
-
-    int c1 = y1 - m*x1;
-    int c2 = y2 - m*x2;
-
-    std::cout<<c1<<" and "<<c2<<std::endl;
-    
- 
-
-    // given (x,y) etraxt the frame and put it the frame sequence vector;
-    unsigned char** img = new unsigned char*[h];
-    
-    for(int x = 0; x<h;x++){
-        img[x] = new unsigned char[w];
-        for(int y = 0;y<w;y++)
-            img[x][y] = FrameSequence::Picture[x1+x][y1+y];
-    }
-    
-    FrameSequence::imageSequence.push_back(img);
-
-    std::cout<<"slope "<<m<<" size is "<<FrameSequence::imageSequence.size()<<std::endl;
+    float m = (y2 - y1)/static_cast<float>(x2 - x1);
 
     
     std::ofstream file;
@@ -125,32 +103,18 @@ void FrameSequence::ExtractImage(int x1,int y1 ,int x2,int y2, int w, int h){
 FrameSequence::~FrameSequence(){
     std::cout<<"Destructor"<<std::endl;
 
-    if(FrameSequence::Picture != nullptr){
-        for(int i = 0;i<FrameSequence::row;++i){
-            delete [] FrameSequence::Picture[i];
-
-        } 
-        delete [] FrameSequence::Picture;
-
-        std::cout<<"Picture destroyed"<<std::endl;
-    }
-
     int size = FrameSequence::imageSequence.size();
 
     std::cout<<"The size is "<<size<<std::endl;
 
     for(int i = 0 ;i<size;++i){
-        for(int k = 0;k<FrameSequence::height;k++){
+        for(int k = 0;k<frameSeq.height;k++){
             delete [] FrameSequence::imageSequence[i][k];
         }
         delete [] FrameSequence::imageSequence[i];
 
     }
     FrameSequence::imageSequence.clear();
-    std::cout<<"Frames destroyed "<<std::endl;
-
-
-
-  
+    std::cout<<"Frames destroyed "<<std::endl;  
 }
 
