@@ -1,5 +1,5 @@
 #include "header.h"
-FrameSequence frameSeq;
+
 FrameSequence::FrameSequence(){
     FrameSequence::row = 0;
     FrameSequence::col = 0; 
@@ -198,7 +198,7 @@ FrameSequence::~FrameSequence(){
     std::cout<<"The size is "<<size<<std::endl;
     // Destroy the imageSequence
     for(int i = 0 ;i<size;++i){
-        for(int k = 0;k<frameSeq.height;k++){
+        for(int k = 0;k<FrameSequence::height;k++){
             delete [] FrameSequence::imageSequence[i][k];
         }
         delete [] FrameSequence::imageSequence[i];
@@ -209,7 +209,7 @@ FrameSequence::~FrameSequence(){
 
 
     // destroty actual frame
-    std::cout<<"Destroy the actualFrame"<<std::endl;
+    std::cout<<"Destroyed the actualFrame"<<std::endl;
     for(int i = 0 ;i<FrameSequence::row; ++i){
         delete [] FrameSequence::actualFrame[i];
     }
