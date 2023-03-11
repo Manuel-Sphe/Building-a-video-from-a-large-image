@@ -7,6 +7,7 @@
     #include <iostream>
     #include <sstream>
     #include <math.h>
+    #include <cmath>
     #include <cstring>
     #include <cstdio>
     #include <memory>

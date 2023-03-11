@@ -1,6 +1,4 @@
 #include "header.h"
-
-
 FrameSequence frameSeq;
 FrameSequence::FrameSequence(){
     FrameSequence::row = 0;
@@ -65,7 +63,6 @@ void FrameSequence::readImage(const std::string & file){
         FrameSequence::row=rows;
         FrameSequence::col =cols;
 
-
         // read takes a char not char * 
         binary_data = new char[size]; 
         
@@ -84,10 +81,7 @@ void FrameSequence::readImage(const std::string & file){
             }
         }
         
-        
-        if (binary_data != nullptr)
-            delete [] binary_data;
-       
+       delete [] image;
     }
 
     input_File.close();
@@ -97,48 +91,46 @@ void FrameSequence::ExtractImage(int  x1,int  y1 ,int x2,int y2, int  w, int  h)
     FrameSequence::height = h;
     FrameSequence::width = w;
 
-    for (int i = y1; i <= y2 - height + 1; ++i) {
-    for (int j = x1; j <= x2 - width + 1; ++j) {
-        unsigned char ** frame = new unsigned char*[height];
-        for (int k = 0; k < height; ++k) {
-            frame[k] = new unsigned char[width];
-            for (int l = 0; l < width; ++l) {
-                frame[k][l] = FrameSequence::actualFrame[i + k][j + l];
+    float slope = static_cast<float>(y2 - y1) / (x2 - x1);
+    int numFrames = std::max(std::abs(x2 - x1), std::abs(y2 - y1));
+
+    auto absValue = [](float x)-> float {
+        return x > 0 ? x : -x;
+    };
+
+    if (absValue(slope) < 1.0){
+        float y = y1;
+        for (int i = 0; i < numFrames; ++i){
+            y += slope;
+            int y_val = static_cast<int>(std::round(y));
+            unsigned char ** frame = new unsigned char*[height];
+            for (int j = 0; j < height; ++j){
+                frame[j] = new unsigned char[width];
+                for (int k = 0; k < width; ++k){
+                    frame[j][k] = FrameSequence::actualFrame[y_val + j][x1 + i + k];
+                }
             }
+            FrameSequence::imageSequence.push_back(frame);
         }
-        // Add frame to the vector of frames
-        FrameSequence::imageSequence.push_back(frame);
-    }
-
-    // Deallocate the actual frame's memory , after storing it in imagesequence vector
-
-    for(int i = 0 ;i<FrameSequence::row; ++i){
-        delete [] FrameSequence::actualFrame[i];
-    }
-    delete FrameSequence::actualFrame;
-
-    
-    }
-
-
-}
-
-FrameSequence::~FrameSequence(){
-    std::cout<<"Destructor"<<std::endl;
-
-    int size = FrameSequence::imageSequence.size();
-
-    std::cout<<"The size is "<<size<<std::endl;
-
-    for(int i = 0 ;i<size;++i){
-        for(int k = 0;k<frameSeq.height;k++){
-            delete [] FrameSequence::imageSequence[i][k];
+    } else {
+        slope = static_cast<float>(x2 - x1) / (y2 - y1);
+        float x = x1;
+        for (int i = 0; i < numFrames; ++i){
+            x += slope;
+            int x_val = static_cast<int>(std::round(x));
+            unsigned char ** frame = new unsigned char*[height];
+            for (int j = 0; j < height; ++j){
+                frame[j] = new unsigned char[width];
+                for (int k = 0; k < width; ++k){
+                    frame[j][k] = FrameSequence::actualFrame[y1 + i + j][x_val + k];
+                }
+            }
+            FrameSequence::imageSequence.push_back(frame);
         }
-        delete [] FrameSequence::imageSequence[i];
-
     }
-    FrameSequence::imageSequence.clear();
-    std::cout<<"Frames destroyed "<<std::endl;  
+
+    std::cout<<"Hehehehe"<<FrameSequence::imageSequence.size()<<'\n';
+   
 }
 
 /**
@@ -156,7 +148,7 @@ void FrameSequence::writeFrames(std::string op, std::string name){
     for (int i = 0; i < size; ++i){
         char buff [100];
         const char * c_name_base = name.c_str();
-        snprintf(buff,sizeof(buff), "%s%s%04d.pgm", "./output/",c_name_base, i);
+        snprintf(buff, sizeof(buff) ,"%s%s%04d.pgm", "./output/",c_name_base, i);
 
         std::string name = buff;
 
@@ -196,4 +188,31 @@ void FrameSequence::writeFrames(std::string op, std::string name){
                 }
         }
     }
+}
+
+FrameSequence::~FrameSequence(){
+    std::cout<<"Destructor"<<std::endl;
+
+    int size = FrameSequence::imageSequence.size();
+
+    std::cout<<"The size is "<<size<<std::endl;
+    // Destroy the imageSequence
+    for(int i = 0 ;i<size;++i){
+        for(int k = 0;k<frameSeq.height;k++){
+            delete [] FrameSequence::imageSequence[i][k];
+        }
+        delete [] FrameSequence::imageSequence[i];
+
+    }
+    FrameSequence::imageSequence.clear();
+    std::cout<<"Image Sequence destroyed "<<std::endl; 
+
+
+    // destroty actual frame
+    std::cout<<"Destroy the actualFrame"<<std::endl;
+    for(int i = 0 ;i<FrameSequence::row; ++i){
+        delete [] FrameSequence::actualFrame[i];
+    }
+    delete FrameSequence::actualFrame;
+
 }
