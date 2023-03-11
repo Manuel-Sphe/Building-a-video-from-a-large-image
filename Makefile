@@ -1,7 +1,7 @@
 CC=g++
 CCFLAGS=-std=c++2a
-SOURCES=Frame.cpp extractor.cpp
-OBJECTS=Frame.o extractor.o 
+SOURCES=FrameSequence.cpp extractor.cpp
+OBJECTS=FrameSequence.o extractor.o 
 
 
 extractor: $(OBJECTS)
@@ -12,5 +12,8 @@ extractor: $(OBJECTS)
 
 clean:
 	rm -f *.o
+
+run: 
+	./extractor sloan_image.pgm
 
 
