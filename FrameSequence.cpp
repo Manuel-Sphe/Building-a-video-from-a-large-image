@@ -3,6 +3,9 @@
 FrameSequence::FrameSequence(){
     FrameSequence::row = 0;
     FrameSequence::col = 0; 
+    FrameSequence::width = 0;
+    FrameSequence::height = 0;
+    FrameSequence::imageSequence.clear();
 }
 
 void FrameSequence::readImage(const std::string & file){
