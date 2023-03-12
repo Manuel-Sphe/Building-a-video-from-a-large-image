@@ -91,12 +91,18 @@ void FrameSequence::ExtractImage(int  x1,int  y1 ,int x2,int y2, int  w, int  h)
     FrameSequence::height = h;
     FrameSequence::width = w;
 
-    float slope = static_cast<float>(y2 - y1) / (x2 - x1);
-    int numFrames = std::max(std::abs(x2 - x1), std::abs(y2 - y1));
-
+    // lambda fuction 
     auto absValue = [](float x)-> float {
         return x > 0 ? x : -x;
     };
+
+    float slope = static_cast<float>(y2 - y1) / (x2 - x1);
+    int numFrames = std::max(absValue(x2 - x1), absValue(y2 - y1));
+
+   /*
+   it means that the line is closer to being vertical than horizontal. 
+   In this case, the function loops over all the x-values from x1+1
+   */
 
     if (absValue(slope) < 1.0){
         float y = y1;
@@ -128,9 +134,6 @@ void FrameSequence::ExtractImage(int  x1,int  y1 ,int x2,int y2, int  w, int  h)
             FrameSequence::imageSequence.push_back(frame);
         }
     }
-
-    std::cout<<"Hehehehe"<<FrameSequence::imageSequence.size()<<'\n';
-   
 }
 
 /**
@@ -142,17 +145,11 @@ void FrameSequence::ExtractImage(int  x1,int  y1 ,int x2,int y2, int  w, int  h)
 
 
 void FrameSequence::writeFrames(std::string op, std::string name){
-
     int size = FrameSequence::imageSequence.size();
-
     for (int i = 0; i < size; ++i){
-        char buff [100];
-        const char * c_name_base = name.c_str();
-        snprintf(buff, sizeof(buff) ,"%s%s%04d.pgm", "./output/",c_name_base, i);
+        std::string path = "./output/" + name + std::to_string(i) + ".pgm";
 
-        std::string name = buff;
-
-        std::ofstream ofs(name, std::ios::out | std::ios::binary);
+        std::ofstream ofs(path, std::ios::out | std::ios::binary);
 
         ofs << "P5" << std::endl;
         ofs << FrameSequence::width << " " <<FrameSequence::height << std::endl;
@@ -187,8 +184,11 @@ void FrameSequence::writeFrames(std::string op, std::string name){
                     ofs.write( reinterpret_cast<char *>(FrameSequence::imageSequence[i][j]),FrameSequence::width);
                 }
         }
+
+
     }
 }
+
 
 FrameSequence::~FrameSequence(){
     std::cout<<"Destructor"<<std::endl;
@@ -199,10 +199,9 @@ FrameSequence::~FrameSequence(){
     // Destroy the imageSequence
     for(int i = 0 ;i<size;++i){
         for(int k = 0;k<FrameSequence::height;k++){
-            delete [] FrameSequence::imageSequence[i][k];
+            delete [] FrameSequence::imageSequence[i][k]; 
         }
         delete [] FrameSequence::imageSequence[i];
-
     }
     FrameSequence::imageSequence.clear();
     std::cout<<"Image Sequence destroyed "<<std::endl; 

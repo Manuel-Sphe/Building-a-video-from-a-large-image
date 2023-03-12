@@ -25,7 +25,5 @@
             void readImage(const std::string & filename);
             void ExtractImage(int  x1,int x2,int y1,int y2,int w,int h);
             void writeFrames(std::string op, std::string name_base);
-            
-            
     };
 #endif 

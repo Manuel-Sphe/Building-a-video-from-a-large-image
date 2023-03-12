@@ -45,6 +45,8 @@ int main(int argc, char *argv[]){
 
     sequence.ExtractImage(x1, y1, x2, y2, width, height);
 
+    // ./extractor sloan_image.pgm -t 0 10 200 200 -s 640 480 
+    // 	./extractor sloan_image.pgm -t 0 10 50 50 -s 640 640 -w none noneseq -w reverse revseq
     int len_ops = argc - 10;
     int op_count = int(len_ops / 3);
 
