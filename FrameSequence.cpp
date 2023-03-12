@@ -58,7 +58,7 @@ void FrameSequence::readImage(const std::string & file){
     
         std::cout<<intensity<<std::endl;
         size = rows*cols ;
-        std::cout<<"size : "<<size<<std::endl;;
+        std::cout<<"size : "<<rows<<" by "<<cols<<std::endl;;
 
         FrameSequence::row=rows;
         FrameSequence::col =cols;
@@ -87,20 +87,24 @@ void FrameSequence::readImage(const std::string & file){
     input_File.close();
 }
 
-void FrameSequence::ExtractImage(int  x1,int  y1 ,int x2,int y2, int  w, int  h){
+void FrameSequence::ExtractImage(const int & x1,const int &  y1 ,const int & x2,const int & y2, const int &  w, const int &  h){
    // Set the height and width of the image frames.
     FrameSequence::height = h;
     FrameSequence::width = w;
 
     // Define a lambda function to calculate the absolute value of a float.
-    auto absValue = [](float x) -> float {
+    auto absValue = [](const float  & x) -> float {
         return x > 0 ? x : -x;
+    };
+    // Define a lambda function to calculate the max value
+    auto max = [](const int & x,const int &  y )->int {
+        return x>y ? x : y;
     };
 
     // Calculate the slope of the line between the two given points.
     float slope = static_cast<float>(y2 - y1) / (x2 - x1);
     // Calculate the number of frames required to cover the entire line.
-    int numFrames = std::max(absValue(x2 - x1), absValue(y2 - y1));
+    int numFrames = max(absValue(x2 - x1), absValue(y2 - y1));
 
     // If the slope of the line is less than 1, loop over all x-values from x1+1
     if (absValue(slope) < 1.0) {
@@ -148,7 +152,6 @@ void FrameSequence::ExtractImage(int  x1,int  y1 ,int x2,int y2, int  w, int  h)
     }
 
 }
-
 /**
  * @brief outputs a .pgm files
  * 
@@ -157,9 +160,10 @@ void FrameSequence::ExtractImage(int  x1,int  y1 ,int x2,int y2, int  w, int  h)
  */
 
 
-void FrameSequence::writeFrames(std::string op, std::string name) {
+void FrameSequence::writeFrames(const std::string &  op, const std::string & name) {
     int size = FrameSequence::imageSequence.size();
-
+    
+    
     // Loop through all frames in the sequence
     for (int i = 0; i < size; ++i) {
 
