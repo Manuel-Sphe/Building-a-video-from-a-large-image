@@ -88,52 +88,65 @@ void FrameSequence::readImage(const std::string & file){
 }
 
 void FrameSequence::ExtractImage(int  x1,int  y1 ,int x2,int y2, int  w, int  h){
+   // Set the height and width of the image frames.
     FrameSequence::height = h;
     FrameSequence::width = w;
 
-    // lambda fuction 
-    auto absValue = [](float x)-> float {
+    // Define a lambda function to calculate the absolute value of a float.
+    auto absValue = [](float x) -> float {
         return x > 0 ? x : -x;
     };
 
+    // Calculate the slope of the line between the two given points.
     float slope = static_cast<float>(y2 - y1) / (x2 - x1);
+    // Calculate the number of frames required to cover the entire line.
     int numFrames = std::max(absValue(x2 - x1), absValue(y2 - y1));
 
-   /*
-   it means that the line is closer to being vertical than horizontal. 
-   In this case, the function loops over all the x-values from x1+1
-   */
-
-    if (absValue(slope) < 1.0){
+    // If the slope of the line is less than 1, loop over all x-values from x1+1
+    if (absValue(slope) < 1.0) {
         float y = y1;
-        for (int i = 0; i < numFrames; ++i){
+        for (int i = 0; i < numFrames; ++i) {
+            // Increment the y-value based on the slope of the line.
             y += slope;
+            // Round the y-value and convert to an integer.
             int y_val = static_cast<int>(std::round(y));
+            // Allocate memory for the frame.
             unsigned char ** frame = new unsigned char*[height];
-            for (int j = 0; j < height; ++j){
+            for (int j = 0; j < height; ++j) {
                 frame[j] = new unsigned char[width];
-                for (int k = 0; k < width; ++k){
+                // Extract the pixel values for each row of the frame from the actualFrame array.
+                for (int k = 0; k < width; ++k) {
                     frame[j][k] = FrameSequence::actualFrame[y_val + j][x1 + i + k];
                 }
             }
-            FrameSequence::imageSequence.push_back(frame);
-        }
-    } else {
-        slope = static_cast<float>(x2 - x1) / (y2 - y1);
-        float x = x1;
-        for (int i = 0; i < numFrames; ++i){
-            x += slope;
-            int x_val = static_cast<int>(std::round(x));
-            unsigned char ** frame = new unsigned char*[height];
-            for (int j = 0; j < height; ++j){
-                frame[j] = new unsigned char[width];
-                for (int k = 0; k < width; ++k){
-                    frame[j][k] = FrameSequence::actualFrame[y1 + i + j][x_val + k];
-                }
-            }
+            // Add the frame to the imageSequence vector.
             FrameSequence::imageSequence.push_back(frame);
         }
     }
+    // If the slope of the line is greater than or equal to 1, loop over all y-values from y1+1
+    else {
+        // Recalculate the slope of the line.
+        slope = static_cast<float>(x2 - x1) / (y2 - y1);
+        float x = x1;
+        for (int i = 0; i < numFrames; ++i) {
+            // Increment the x-value based on the slope of the line.
+            x += slope;
+            // Round the x-value and convert to an integer.
+            int x_val = static_cast<int>(std::round(x));
+            // Allocate memory for the frame.
+            unsigned char ** frame = new unsigned char*[height];
+            for (int j = 0; j < height; ++j) {
+                frame[j] = new unsigned char[width];
+                // Extract the pixel values for each row of the frame from the actualFrame array.
+                for (int k = 0; k < width; ++k) {
+                    frame[j][k] = FrameSequence::actualFrame[y1 + i + j][x_val + k];
+                }
+            }
+            // Add the frame to the imageSequence vector.
+            FrameSequence::imageSequence.push_back(frame);
+        }
+    }
+
 }
 
 /**
@@ -144,50 +157,64 @@ void FrameSequence::ExtractImage(int  x1,int  y1 ,int x2,int y2, int  w, int  h)
  */
 
 
-void FrameSequence::writeFrames(std::string op, std::string name){
+void FrameSequence::writeFrames(std::string op, std::string name) {
     int size = FrameSequence::imageSequence.size();
-    for (int i = 0; i < size; ++i){
-        std::string path = "./output/" + name + std::to_string(i) + ".pgm";
 
+    // Loop through all frames in the sequence
+    for (int i = 0; i < size; ++i) {
+
+        // Construct the output file path using the frame number
+        // and the provided name, with up to 4 digits of leading 0s
+        std::stringstream ss;
+        ss << "./output/" << name << std::setfill('0') << std::setw(4) << i << ".pgm";
+        std::string path = ss.str();
+
+        // Create a new output file stream for the current frame
         std::ofstream ofs(path, std::ios::out | std::ios::binary);
 
+        // Write the PGM header information to the file
         ofs << "P5" << std::endl;
         ofs << FrameSequence::width << " " <<FrameSequence::height << std::endl;
         ofs << 255 << std::endl;
         ofs << std::endl;
 
+        // Depending on the operation requested, write the frame data to the file
         switch(op[0]) {
             case 'r':
-                if (op == "reverse"){
-                    for (int j = 0; j < FrameSequence::height; ++j ){
+                if (op == "reverse") {
+                    // Write the current frame in reverse order
+                    for (int j = 0; j < FrameSequence::height; ++j ) {
                         ofs.write( reinterpret_cast<char *>(FrameSequence::imageSequence[size - i - 1][j]), FrameSequence::width);
                     }
                 } else if (op == "reinvert") {
-                    for (int j = 0; j < FrameSequence::height; ++j ){
-                        for (int k = 0; k < FrameSequence::width; ++k){
+                    // Write the current frame in reverse order, with inverted colors
+                    for (int j = 0; j < FrameSequence::height; ++j ) {
+                        for (int k = 0; k < FrameSequence::width; ++k) {
                             ofs << (unsigned char)( 255 - static_cast<int>(FrameSequence::imageSequence[size - i - 1][j][k] )) ;
                         }
                     }
                 }
                 break;
             case 'i':
-                if (op == "invert"){
-                    for (int j = 0; j < FrameSequence::height; ++j ){
-                        for (int k = 0; k < FrameSequence::width; ++k){
+                if (op == "invert") {
+                    // Write the current frame with inverted colors
+                    for (int j = 0; j < FrameSequence::height; ++j ) {
+                        for (int k = 0; k < FrameSequence::width; ++k) {
                             ofs << (unsigned char)( 255 - static_cast<int>(FrameSequence::imageSequence[i][j][k]) ) ;
                         }
                     }
                 }
                 break;
             default:
-                for (int j = 0; j < FrameSequence::height; ++j ){
-                    ofs.write( reinterpret_cast<char *>(FrameSequence::imageSequence[i][j]),FrameSequence::width);
+                // Write the current frame as-is
+                for (int j = 0; j < FrameSequence::height; ++j ) {
+                    ofs.write( reinterpret_cast<char *>(FrameSequence::imageSequence[i][j]), FrameSequence::width);
                 }
         }
-
-
     }
 }
+
+
 
 
 FrameSequence::~FrameSequence(){
