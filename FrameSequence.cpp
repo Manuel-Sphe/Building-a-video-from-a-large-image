@@ -60,11 +60,11 @@ void FrameSequence::readImage(const std::string & file){
         ss.clear();
     
         std::cout<<intensity<<std::endl;
-        size = rows*cols ;
+        size = rows * cols ;
         std::cout<<"size : "<<rows<<" by "<<cols<<std::endl;;
 
-        FrameSequence::row=rows;
-        FrameSequence::col =cols;
+        FrameSequence::row = rows;
+        FrameSequence::col = cols;
 
         // read takes a char not char * 
         binary_data = new char[size]; 
@@ -77,9 +77,9 @@ void FrameSequence::readImage(const std::string & file){
         FrameSequence::actualFrame = new unsigned char*[rows];
         // Will have to deallocate this memory after loading into the imageSequence
 
-        for(int i = 0;i<rows;++i){
+        for(int i = 0; i < rows; ++i) {
             FrameSequence::actualFrame[i] = new unsigned char[cols];
-            for(int j = 0 ;j<cols;++j){
+            for(int j = 0 ; j <cols; ++j) {
                 FrameSequence::actualFrame[i][j] = image[i*cols + j]; // 1D to 2D 
             }
         }
@@ -90,7 +90,8 @@ void FrameSequence::readImage(const std::string & file){
     input_File.close();
 }
 
-void FrameSequence::ExtractImage(const int & x1,const int &  y1 ,const int & x2,const int & y2, const int &  w, const int &  h){
+void FrameSequence::ExtractImage(const int & x1,const int &  y1 ,const int & x2,
+                                 const int & y2, const int &  w, const int &  h){
    // Set the height and width of the image frames.
     FrameSequence::height = h;
     FrameSequence::width = w;
@@ -128,6 +129,11 @@ void FrameSequence::ExtractImage(const int & x1,const int &  y1 ,const int & x2,
             }
             // Add the frame to the imageSequence vector.
             FrameSequence::imageSequence.push_back(frame);
+
+            for (int j = 0; j < height ; ++j ) {
+                delete frame[j];
+            }
+            delete [] frame;
         }
     }
     // If the slope of the line is greater than or equal to 1, loop over all y-values from y1+1
@@ -151,6 +157,11 @@ void FrameSequence::ExtractImage(const int & x1,const int &  y1 ,const int & x2,
             }
             // Add the frame to the imageSequence vector.
             FrameSequence::imageSequence.push_back(frame);
+
+            for (int j = 0; j < height; ++j) {
+                delete frame[j];
+            }
+            delete [] frame;
         }
     }
 
@@ -241,7 +252,7 @@ FrameSequence::~FrameSequence(){
     std::cout<<"Image Sequence destroyed "<<std::endl; 
 
 
-    // destroty actual frame
+    // destroy actual frame
     std::cout<<"Destroyed the actualFrame"<<std::endl;
     for(int i = 0 ;i<FrameSequence::row; ++i){
         delete [] FrameSequence::actualFrame[i];

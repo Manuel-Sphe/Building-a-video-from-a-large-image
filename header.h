@@ -7,18 +7,18 @@
     #include <iostream>
     #include <sstream>
     #include <cmath>
-    class FrameSequence{
+    class FrameSequence {
         private:
-            // This an array of fram 
+            // This an array of frame
             std::vector<unsigned char**> imageSequence;
             unsigned char** actualFrame;
             int row, col, width, height;
 
         public:
             FrameSequence(void);
-            void readImage(const std::string & );
+            void readImage(const std::string & fileName);
             void ExtractImage(const int & ,const int & ,const  int &,const int & ,const int &,const int & );
             void writeFrames(const std::string & ,const std::string  & );
             ~FrameSequence();
     };
-#endif 
+#endif
