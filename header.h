@@ -16,7 +16,7 @@
 
         public:
             FrameSequence(void);
-            void readImage(const std::string & fileName);
+            void readImage(const std::string & );
             void ExtractImage(const int & ,const int & ,const  int &,const int & ,const int &,const int & );
             void writeFrames(const std::string & ,const std::string  & );
             ~FrameSequence();

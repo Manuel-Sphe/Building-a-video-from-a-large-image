@@ -242,21 +242,19 @@ FrameSequence::~FrameSequence(){
 
     std::cout<<"The size is "<<size<<std::endl;
     // Destroy the imageSequence
-    for(int i = 0 ;i<size;++i){
-        for(int k = 0;k<FrameSequence::height;k++){
-            delete [] FrameSequence::imageSequence[i][k]; 
-        }
-        delete [] FrameSequence::imageSequence[i];
+    for (int k = 0; k <FrameSequence::height; k++) {
+            delete [] FrameSequence::imageSequence[k];
     }
+    delete [] FrameSequence::imageSequence;
     FrameSequence::imageSequence.clear();
     std::cout<<"Image Sequence destroyed "<<std::endl; 
 
 
     // destroy actual frame
     std::cout<<"Destroyed the actualFrame"<<std::endl;
-    for(int i = 0 ;i<FrameSequence::row; ++i){
+    for(int i = 0 ;i < FrameSequence::row; ++i) {
         delete [] FrameSequence::actualFrame[i];
     }
-    delete FrameSequence::actualFrame;
+    delete [] FrameSequence::actualFrame;
 
 }
